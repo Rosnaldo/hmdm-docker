@@ -14,7 +14,7 @@ services:
   # 
   nginx-http:
     image: nginx:latest
-    container_name: nginx-http
+    container_name: hmdm-nginx-http
     ports:
       - "80:80"
     volumes:
