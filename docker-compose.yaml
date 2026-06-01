@@ -1,17 +1,4 @@
 services:
-
-  # To use custom SSL certificates:
-  # 1. Comment out the whole certbot: section
-  # 2. Create the subdirectory ./volumes/letsencrypt/live/your-domain.com/
-  # 3. Copy the private key, certificate, and full certificate chain 
-  # in the PEM (base64) format to that subdirectory. Use the following names:
-  # cert.pem, fullchain.pem, privkey.pem
-  #
-  # To use plain HTTP:
-  # 1. Comment out the certbot: section
-  # 2. Uncomment the port 80 forwarding
-  # 3. Set the environment variable in the .env file: PROTOCOL=http
-  # 
   hmdm-nginx-http:
     image: nginx:latest
     container_name: hmdm-nginx-http
@@ -19,6 +6,18 @@ services:
       - "80:80"
     volumes:
       - ./nginx/http/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certbot/www:/var/www/certbot
+
+  nginx-https:
+    image: nginx:latest
+    container_name: hmdm-nginx-https
+    ports:
+      - "443:443"
+    depends_on:
+      - hmdm-nginx-http
+    volumes:
+      - ./nginx/https/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./volumes/letsencrypt:/etc/letsencrypt:ro
       - ./certbot/www:/var/www/certbot
   
   certbot:
@@ -43,9 +42,8 @@ services:
 
   hmdm:
     image: headwindmdm/hmdm:0.1.8
+    container_name: hmdm
     ports:
-      # Uncomment this port forwarding if you want to use plain HTTP instead of HTTPS
-      #- 80:8080
       - 443:8443
       - 31000:31000
     volumes:
@@ -55,6 +53,8 @@ services:
       - ./volumes/webapps:/usr/local/tomcat/webapps
     depends_on:
       - certbot
+      - hmdm-nginx-http
+      - hmdm-nginx-https
     environment:
       SQL_HOST: postgresql
       SQL_USER: ${SQL_USER}
