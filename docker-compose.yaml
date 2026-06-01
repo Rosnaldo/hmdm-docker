@@ -12,7 +12,7 @@ services:
   # 2. Uncomment the port 80 forwarding
   # 3. Set the environment variable in the .env file: PROTOCOL=http
   # 
-  nginx-http:
+  hmdm-nginx-http:
     image: nginx:latest
     container_name: hmdm-nginx-http
     ports:
@@ -27,7 +27,7 @@ services:
       - ./certbot/www:/var/www/certbot
       - ./volumes/letsencrypt:/etc/letsencrypt
     depends_on:
-      - nginx-http
+      - hmdm-nginx-http
     entrypoint: "certbot certonly --non-interactive --agree-tos -m ${ADMIN_EMAIL} --webroot -w /var/www/certbot -d ${BASE_DOMAIN}"
 
   postgresql:
