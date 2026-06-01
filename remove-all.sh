@@ -9,7 +9,7 @@ if [ "$RESPONSE" == "erase" ]; then
     echo "you will be banned, so we don't recommend removing LetsEncrypt image"
     read -e -p "Remove LetsEncrypt volume as well [Y/n]?: " REMOVE_LETSENCRYPT
 
-    docker-compose down --remove-orphans -v --rmi all
+    docker compose down --remove-orphans -v --rmi all
     rm -rf volumes/db
     rm -rf volumes/work
     if [[ "$REMOVE_LETSENCRYPT" =~ ^[Yy]$ ]]; then
